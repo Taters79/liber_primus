@@ -4,10 +4,6 @@
 
     Terminal application to aid in the attempting dechiperment of the Liber Primus. Project used to learn the Rust language
 
-    Crate dependencies:
-        - primality-test    v0.3.0
-        - terminal          v0.2.1
-
 
     TODO: (tja)
         - Need other prime math functions, Totient etc..
@@ -25,7 +21,7 @@ use lazy_static::lazy_static;
 #[derive(Parser, Debug)]
 #[command(name = "lp - Liber Primus")]
 #[command(version = "0.0.1")]
-#[command(about = "Provides utilities to iterate on applying decryptions on a per page basis", long_about = None)]
+#[command(about = "Provides utilities to check the gpsum on a given latin word, find the primality of a given number, and also apply decryption algorithms to a LP page.", long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -37,6 +33,11 @@ enum Commands {
     GPSum { word: String, },
     Prime { number: u32, }
 }
+
+
+/* END COMMAND LINE ARG */
+
+
 /*
 // Application state
 #[derive(Debug, PartialEq, Eq)]
@@ -52,31 +53,6 @@ enum RuneColor {
     RED
 }
 */
-
-/* END COMMAND LINE ARG */
-
-
-/* HASH MAPS TO CONVERT LATIN TO RUNE AND RUNE TO LATIN */
-/*
-#[derive(Eq, Debug)]
-struct RuneEntry {
-    rune: char,
-    value: u32,
-}
-
-impl PartialEq for RuneEntry {
-    fn eq(&self, other: &RuneEntry) -> bool {
-        self.rune == other.rune
-    }
-}
-
-impl RuneEntry {
-    fn new(rune: char, value: u32) -> RuneEntry {
-        RuneEntry { rune: rune, value: value}
-    }
-}
-*/
-
 
 #[derive(Eq, Debug)]
 struct LatinEntry {
@@ -106,49 +82,6 @@ lazy_static! {
     };
 }
 
-// Generate HashMap to assist in calculating the GPSum of a given word
-/*
-lazy_static! {
-    static ref LATINMAP: HashMap<String, u32> = {
-        let mut map = HashMap::<String, u32>::new();
-        map.insert("F".to_string(),     2);
-        map.insert("U".to_string(),     3);
-        map.insert("TH".to_string(),    5);
-        map.insert("O".to_string(),     7);
-        map.insert("R".to_string(),     11);
-        map.insert("C".to_string(),     13);
-        map.insert("K".to_string(),     13);
-        map.insert("G".to_string(),     17);
-        map.insert("W".to_string(),     19);
-        map.insert("H".to_string(),     23);
-        map.insert("N".to_string(),     29);
-        map.insert("I".to_string(),     31);
-        map.insert("J".to_string(),     37);
-        map.insert("EO".to_string(),    41);
-        map.insert("P".to_string(),     43);
-        map.insert("X".to_string(),     47);
-        map.insert("S".to_string(),     53);
-        map.insert("Z".to_string(),     53);
-        map.insert("T".to_string(),     59);
-        map.insert("B".to_string(),     61);
-        map.insert("E".to_string(),     67);
-        map.insert("M".to_string(),     71);
-        map.insert("L".to_string(),     73);
-        map.insert("NG".to_string(),    79);
-        map.insert("ING".to_string(),   79);
-        map.insert("OE".to_string(),    83);
-        map.insert("D".to_string(),     89);
-        map.insert("A".to_string(),     97);
-        map.insert("AE".to_string(),    101);
-        map.insert("Y".to_string(),     103);
-        map.insert("IA".to_string(),    107);
-        map.insert("IO".to_string(),    107);
-        map.insert("EA".to_string(),    109);
-        map
-    };
-}
-*/
-/* END HASH MAPS - PULL OUT INTO LIB/CRATE */
 
 
 fn main() {
@@ -156,7 +89,7 @@ fn main() {
     let args = Cli::parse();
 
     match &args.command {
-        Commands::Decrypt { page } => { println!("Loading page {} in decryption mode:", page); }
+        Commands::Decrypt { page } => { decrypt(page); }
         Commands::GPSum { word } => {
             println!("GP Sum is: {}", gpsum_latin(&word.to_ascii_uppercase() ));
             return; 
@@ -165,10 +98,6 @@ fn main() {
     }
 
     
-    //println!("{} {}", RUNEMAP[&'\u{16A0}'].latin, RUNEMAP[&'\u{16A0}'].value);
-    //println!("{}", LATINMAP[&"F".to_string()]);
-    //println!("{}", GPSET.get(&2).unwrap().rune);
-
     /* 
         TODO: (tja) - handle command line args
         --help, display all help options
@@ -176,23 +105,11 @@ fn main() {
         --prime, check whether a number are prime, also check for emirp...
         no args, dump into menu
     */
+    
+}
 
-    //let mut app_state = AppState::MENU;
-    //let mut buffer = String::new();
-    //while app_state != AppState::EXIT {
-                
-        //for entry in &GP {
-        //    buffer.push(entry.0);
-        //}
-
-        //println!("{:?}", buffer);
-
-        /*match app_state {
-            AppState::MENU => app_state = AppState::LP,
-            AppState::LP => app_state = AppState::EXIT,
-            AppState::EXIT => return
-        }*/    
-    //}
+fn decrypt(page: &u32) {
+   println!("Loading page {} in decryption mode:", page);  
 }
 
 fn gpsum_latin(word: &String) -> u32 {
